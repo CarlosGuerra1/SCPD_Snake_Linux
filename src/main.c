@@ -12,9 +12,11 @@
 #include "interface.h"
 #include "support.h"
 
-int
-main (int argc, char *argv[])
-{
+extern void DibujarSerpiente(GtkWidget *);
+extern void CrearComida(GtkWidget * widget);
+extern void Trazar(GtkWidget * widget);
+
+int main (int argc, char *argv[]) {
   GtkWidget *window1;
 
 #ifdef ENABLE_NLS
@@ -35,7 +37,9 @@ main (int argc, char *argv[])
    */
   window1 = create_window1 ();
   gtk_widget_show (window1);
-
+  
+  g_timeout_add(500,Trazar, window1);
+  g_timeout_add(10000,CrearComida, window1);
   gtk_main ();
   return 0;
 }
