@@ -39,7 +39,7 @@ int main (int argc, char *argv[]) {
   gtk_widget_show (window1);
   
   g_timeout_add(500,Trazar, window1);
-  g_timeout_add(10000,CrearComida, window1);
+  g_timeout_add(7500,CrearComida, window1);
   gtk_main ();
   return 0;
 }

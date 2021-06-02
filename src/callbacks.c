@@ -46,6 +46,7 @@ COMIDA com = { {0,0}, NADA };
 static PEDACITOS* serpiente = NULL;
 static int tams = 5;
 static int cuenta = 0;
+static int band=0;
 
 PEDACITOS * NuevaSerpiente(int);
 void DibujarSerpiente(GtkWidget *);
@@ -76,11 +77,12 @@ gboolean on_window1_key_press_event (GtkWidget *widget, GdkEventKey *event, gpoi
 	
 	switch(event->keyval){
 	case GDK_Right:
-			if(!MoverSerpiente(serpiente, DER, widget, tams)){
-			gtk_dialog_run(GTK_DIALOG(message_dialog));
-			gtk_widget_destroy(message_dialog);                              
+			if(band==0){
+				if(!MoverSerpiente(serpiente, DER, widget, tams)){
+				gtk_dialog_run(GTK_DIALOG(message_dialog));
+				gtk_widget_destroy(message_dialog);                              
+				}
 			}
-			
 			if (Comer(serpiente, tams)) {
 					serpiente = AjustarSerpiente(serpiente, &tams, com.tipo, widget);
 					com.tipo = NADA;
@@ -88,11 +90,12 @@ gboolean on_window1_key_press_event (GtkWidget *widget, GdkEventKey *event, gpoi
 			DibujarSerpiente(widget);
 		break;
 		case GDK_Left:
-			if(!MoverSerpiente(serpiente, IZQ, widget, tams)){
-			gtk_dialog_run(GTK_DIALOG(message_dialog));
-			gtk_widget_destroy(message_dialog); 
+			if(band==0){
+				if(!MoverSerpiente(serpiente, IZQ, widget, tams)){
+				gtk_dialog_run(GTK_DIALOG(message_dialog));
+				gtk_widget_destroy(message_dialog); 		
+				}
 			}
-			
 			if (Comer(serpiente, tams)) {
 				serpiente = AjustarSerpiente(serpiente, &tams, com.tipo, widget);
 				com.tipo = NADA;
@@ -100,11 +103,12 @@ gboolean on_window1_key_press_event (GtkWidget *widget, GdkEventKey *event, gpoi
 			DibujarSerpiente(widget);
 		break;
 		case GDK_Up:
-			if(!MoverSerpiente(serpiente, ARR, widget, tams)){
-			gtk_dialog_run(GTK_DIALOG(message_dialog));
-			gtk_widget_destroy(message_dialog); 
+			if(band==0){
+				if(!MoverSerpiente(serpiente, ARR, widget, tams)){
+				gtk_dialog_run(GTK_DIALOG(message_dialog));
+				gtk_widget_destroy(message_dialog); 
+				}
 			}
-			
 			if (Comer(serpiente, tams)) {
 				serpiente = AjustarSerpiente(serpiente, &tams, com.tipo, widget);
 				com.tipo = NADA;
@@ -112,10 +116,13 @@ gboolean on_window1_key_press_event (GtkWidget *widget, GdkEventKey *event, gpoi
 			DibujarSerpiente(widget);
 		break;
 		case GDK_Down:
-			if(!MoverSerpiente(serpiente, ABA, widget, tams)){
-			gtk_dialog_run(GTK_DIALOG(message_dialog));
-			gtk_widget_destroy(message_dialog); 
+			if(band==0){
+				if(!MoverSerpiente(serpiente, ABA, widget, tams)){
+				gtk_dialog_run(GTK_DIALOG(message_dialog));
+				gtk_widget_destroy(message_dialog); 
 			}
+			}
+
 			
 			if (Comer(serpiente, tams)) {
 				serpiente = AjustarSerpiente(serpiente, &tams, com.tipo, widget);
@@ -487,10 +494,12 @@ int Colisionar(PEDACITOS* serpiente, int tams){
   int i = 0;
 	while (serpiente[i].tipo != CABEZA) {
 		if (serpiente[i].pos.x == serpiente[tams - 1].pos.x && serpiente[i].pos.y == serpiente[tams - 1].pos.y) {
+			band = 1;
 			return 1;
 		}
 		i++;
 	}
+	
 	return 0;
 }
 
@@ -557,9 +566,9 @@ int Comer(PEDACITOS* serpiente, int tams){
 	return 0;
 }
 
-void CrearComida(GtkWidget * widget){
+void CrearComida(GtkWidget * widget){	
 	
-	
+	DibujarSerpiente(widget);
 	GtkWidget *tablero = lookup_widget(widget,"drawingarea1");
 	if(rand() % 100 < 80){
 		com.tipo = CRECE;	
@@ -568,6 +577,7 @@ void CrearComida(GtkWidget * widget){
 	}
 	com.pos.x = rand() % tablero->allocation.width / TAMSERP;
 	com.pos.y = rand() % tablero->allocation.height / TAMSERP;
+	DibujarSerpiente(widget);
 	/*
 	if(Comer(serpiente, tams)){
 		serpiente = AjustarSerpiente(serpiente,&tams,widget, tams);
@@ -575,6 +585,12 @@ void CrearComida(GtkWidget * widget){
 }
 
 void Trazar(GtkWidget * widget){
-	MoverSerpiente(serpiente, serpiente[tams - 1].dir , widget, tams);
+	if(band==0)
+		MoverSerpiente(serpiente, serpiente[tams - 1].dir , widget, tams);
+		
 	DibujarSerpiente(widget);
+	if (Comer(serpiente, tams)) {
+		serpiente = AjustarSerpiente(serpiente, &tams, com.tipo, widget);
+		com.tipo = NADA;
+	}
 }
